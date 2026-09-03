@@ -2,7 +2,6 @@
   "_note": "Tu dien doi tu vung Bac -> Nam. Anh sua/them thoai mai. Khop theo bien tu (word boundary), khong phan biet hoa thuong, giu nguyen hoa dau cau. Cum tu dai duoc uu tien khop truoc tu ngan.",
   "_dai_tu_nhan_xung": {
     "tớ": "tui",
-    "mình": "tui",
     "cậu": "bạn",
     "ông ấy": "ổng",
     "bà ấy": "bả",
@@ -21,7 +20,6 @@
     "thế à": "vậy hả",
     "thế": "vậy",
     "đấy": "đó",
-    "này": "nè",
     "nhé": "nha",
     "nhỉ": "hen",
     "vâng": "dạ",
@@ -71,31 +69,64 @@
     "đi đâu đấy": "đi đâu đó",
     "sao thế": "sao vậy",
     "gì cơ": "gì",
-    "cơ": "",
     "xem nào": "coi",
     "xem": "coi",
-    "nhìn": "coi",
     "ăn cơm chưa": "ăn cơm chưa",
-    "về nhà": "về nhà",
-    "không": "hông"
+    "về nhà": "về nhà"
   },
   "_rui_ro_can_review": {
-    "_note": "Nhung tu duoi day de sai nghia. Pipeline se KHONG tu doi, chi ghi canh bao vao log de anh tu quyet.",
+    "_note": "Khong bao gio tu doi o bat ky muc do nao. Chi ghi canh bao de nguoi duyet quyet dinh.",
     "canh_bao": [
-      "cơ",
       "hoa",
+      "màn",
+      "xem",
+      "rẻ",
       "hơi",
       "khoai lang",
-      "không",
-      "màn",
-      "mình",
-      "nhìn",
-      "này",
-      "rẻ",
       "về nhà",
-      "xe ôm",
-      "xem",
-      "ăn cơm chưa"
+      "ăn cơm chưa",
+      "xe ôm"
+    ]
+  },
+  "_dam_them": {
+    "_note": "Chi ap dung khi chay muc do 'dam'. Dam chat Nam nhung de lech sac thai o van ban trang trong.",
+    "mình": "tui",
+    "này": "nè",
+    "không": "hông",
+    "thích": "khoái",
+    "chỉ": "có",
+    "nhìn": "ngó",
+    "vậy à": "vậy hả",
+    "rồi đó": "rồi đa"
+  },
+  "_cum_bao_ve": {
+    "_note": "Cum co dinh khong duoc dong toi. Duoc che truoc khi doi tu vung roi tra lai nguyen ven. Them ten thuong hieu / thuat ngu cua anh vao day.",
+    "cum": [
+      "không dây",
+      "không khí",
+      "không gian",
+      "không tải",
+      "chân không",
+      "hàng không",
+      "không quân",
+      "số không",
+      "không bào",
+      "thời không",
+      "chỉ đường",
+      "chỉ số",
+      "chỉ dẫn",
+      "chỉ tiêu",
+      "chỉ định",
+      "sợi chỉ",
+      "chỉ huy",
+      "chỉ thị",
+      "nhìn nhận",
+      "nhìn chung",
+      "thích nghi",
+      "thích hợp",
+      "thích ứng",
+      "sở thích",
+      "thí sinh"
     ]
   }
 }

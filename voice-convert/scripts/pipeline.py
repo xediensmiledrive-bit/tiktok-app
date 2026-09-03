@@ -177,11 +177,13 @@ def branch_tts(video, workdir, outdir, name, cfg, vocals, bed, total_dur):
         raise RuntimeError("STT khong boc duoc chu nao — clip co giong noi khong?")
     log(f"boc duoc {len(segs)} cau", 2)
 
-    rules, warn = north_to_south.load_rules()
+    rules, warn, protect = north_to_south.load_rules(
+        muc_do=cfg.get("muc_do_doi_tu_vung", "nhe"))
     all_changes, all_warnings = [], []
     for s in segs:
         s["text_bac"] = s["text"]
-        s["text_nam"], ch, wn = north_to_south.convert(s["text"], rules, warn)
+        s["text_nam"], ch, wn = north_to_south.convert(
+            s["text"], rules, warn, protect=protect)
         all_changes += ch
         all_warnings += wn
 
