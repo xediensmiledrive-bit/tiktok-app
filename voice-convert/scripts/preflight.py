@@ -25,6 +25,8 @@ print("=== Kiem tra moi truong ===")
 check("ffmpeg + ffprobe", bool(shutil.which("ffmpeg") and shutil.which("ffprobe")),
       "apt-get update && apt-get install -y --no-install-recommends ffmpeg")
 
+import el_api as _el
+_el._load_dotenv()
 has_key = bool(os.environ.get("ELEVENLABS_API_KEY", "").strip())
 check("ELEVENLABS_API_KEY", has_key, "export ELEVENLABS_API_KEY=xi_...")
 

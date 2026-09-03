@@ -1,6 +1,5 @@
 {
   "_note": "Tu dien doi tu vung Bac -> Nam. Anh sua/them thoai mai. Khop theo bien tu (word boundary), khong phan biet hoa thuong, giu nguyen hoa dau cau. Cum tu dai duoc uu tien khop truoc tu ngan.",
-
   "_dai_tu_nhan_xung": {
     "tớ": "tui",
     "mình": "tui",
@@ -14,7 +13,6 @@
     "mẹ": "má",
     "bố mẹ": "ba má"
   },
-
   "_tu_chi_dinh_va_tro_tu": {
     "thế nào": "sao",
     "như thế nào": "làm sao",
@@ -30,9 +28,9 @@
     "ừ": "ờ",
     "phải không": "phải hông",
     "có phải không": "phải hông",
-    "chứ nhỉ": "chớ hen"
+    "chứ nhỉ": "chớ hen",
+    "nhá": "nha"
   },
-
   "_tinh_tu_trang_tu": {
     "đắt": "mắc",
     "rẻ": "rẻ",
@@ -47,7 +45,6 @@
     "cực kỳ": "quá",
     "vô cùng": "quá"
   },
-
   "_do_vat_thuc_an": {
     "quả": "trái",
     "bát": "chén",
@@ -69,7 +66,6 @@
     "ô": "dù",
     "hoa": "bông"
   },
-
   "_dong_tu_cach_noi": {
     "làm gì đấy": "làm gì đó",
     "đi đâu đấy": "đi đâu đó",
@@ -83,9 +79,23 @@
     "về nhà": "về nhà",
     "không": "hông"
   },
-
   "_rui_ro_can_review": {
     "_note": "Nhung tu duoi day de sai nghia. Pipeline se KHONG tu doi, chi ghi canh bao vao log de anh tu quyet.",
-    "canh_bao": ["không", "cơ", "màn", "hoa", "xem", "nhìn", "mình", "rẻ", "hơi", "khoai lang", "về nhà", "ăn cơm chưa", "xe ôm"]
+    "canh_bao": [
+      "cơ",
+      "hoa",
+      "hơi",
+      "khoai lang",
+      "không",
+      "màn",
+      "mình",
+      "nhìn",
+      "này",
+      "rẻ",
+      "về nhà",
+      "xe ôm",
+      "xem",
+      "ăn cơm chưa"
+    ]
   }
 }

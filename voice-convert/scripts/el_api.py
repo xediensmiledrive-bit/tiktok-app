@@ -16,11 +16,32 @@ class ElevenLabsError(RuntimeError):
     pass
 
 
+def _load_dotenv():
+    """Nap voice-convert/.env neu bien moi truong chua co key.
+
+    File .env nam trong .gitignore va de quyen 600 — key khong bao gio vao git.
+    """
+    path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".env")
+    if not os.path.exists(path):
+        return
+    with open(path, encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            k, _, v = line.partition("=")
+            os.environ.setdefault(k.strip(), v.strip().strip('"').strip("'"))
+
+
 def _key():
     k = os.environ.get("ELEVENLABS_API_KEY", "").strip()
     if not k:
+        _load_dotenv()
+        k = os.environ.get("ELEVENLABS_API_KEY", "").strip()
+    if not k:
         raise ElevenLabsError(
-            "Chua co ELEVENLABS_API_KEY. Set bien moi truong nay roi chay lai."
+            "Chua co ELEVENLABS_API_KEY. Dat vao voice-convert/.env "
+            "(dong: ELEVENLABS_API_KEY=...) hoac export bien moi truong."
         )
     return k
 

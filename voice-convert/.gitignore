@@ -9,3 +9,8 @@ voice_samples/*
 !voice_samples/.gitkeep
 __pycache__/
 *.pyc
+
+# Khong bao gio commit key
+.env
+.env.*
+*.key

@@ -160,11 +160,19 @@ def fit_to_duration(src, out_path, target, max_stretch=1.40, min_stretch=0.95):
     return got, clamped, was_clamped
 
 
-def pad_to_duration(src, out_path, target):
+# Pad qua muc tieu mot chut: thoi luong danh nghia cua video va tong thoi gian
+# thuc cua cac khung hinh khong bao gio trung khit, nen pad dung bang target van
+# lam -shortest cat mat vai khung cuoi.
+PAD_SAFETY = 0.25
+
+
+def pad_to_duration(src, out_path, target, safety=PAD_SAFETY):
     """Keo dai audio bang im lang cho du target giay (khong lam ngan neu dang dai hon).
 
     Can thiet vi mux dung -shortest: track giong ngan hon video se cat cut hinh.
+    Audio thua se bi -shortest cat lai theo video, nen pad du la an toan.
     """
+    target = target + safety
     cur = duration_of(src)
     if cur >= target - 0.02:
         if src != out_path:
