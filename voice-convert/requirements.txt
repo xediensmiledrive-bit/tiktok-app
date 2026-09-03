@@ -1,0 +1,3 @@
+# Pipeline chi can requests de goi REST API cua ElevenLabs.
+# Moi thu con lai (tach audio, canh timing, mux) do ffmpeg lo.
+requests>=2.31.0

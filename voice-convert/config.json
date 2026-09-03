@@ -1,0 +1,31 @@
+{
+  "_huong_dan": "voice_id la giong nu mien Nam se dung. Chay scripts/list_voices.py --add de chon tu Voice Library, script se tu ghi voice_id vao day.",
+  "voice_id": "<CHUA_CHON — chay scripts/list_voices.py --add>",
+  "voice_name": "",
+  "mode": "both",
+  "keep_music": "auto",
+  "language_code": "vi",
+  "stt_model_id": "scribe_v1",
+  "diarize": true,
+  "tts_model_id": "eleven_multilingual_v2",
+  "tts_voice_settings": {
+    "stability": 0.45,
+    "similarity_boost": 0.85,
+    "style": 0.15,
+    "use_speaker_boost": true
+  },
+  "sts_model_id": "eleven_multilingual_sts_v2",
+  "sts_voice_settings": {
+    "stability": 0.4,
+    "similarity_boost": 0.9,
+    "use_speaker_boost": true
+  },
+  "sts_remove_background_noise": false,
+  "segment_gap_threshold": 0.55,
+  "segment_max_chars": 220,
+  "max_stretch": 1.4,
+  "min_stretch": 0.95,
+  "bed_gain_db": -3.0,
+  "music_detect_threshold_db": 12.0,
+  "_ghi_chu_stretch": "max_stretch: cau dai hon khung se noi nhanh toi da bao nhieu lan. min_stretch gan 1.0 = cau ngan thi chen im lang chu khong keo nhao giong."
+}

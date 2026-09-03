@@ -1,0 +1,91 @@
+{
+  "_note": "Tu dien doi tu vung Bac -> Nam. Anh sua/them thoai mai. Khop theo bien tu (word boundary), khong phan biet hoa thuong, giu nguyen hoa dau cau. Cum tu dai duoc uu tien khop truoc tu ngan.",
+
+  "_dai_tu_nhan_xung": {
+    "tớ": "tui",
+    "mình": "tui",
+    "cậu": "bạn",
+    "ông ấy": "ổng",
+    "bà ấy": "bả",
+    "anh ấy": "ảnh",
+    "chị ấy": "chỉ",
+    "cô ấy": "cổ",
+    "bố": "ba",
+    "mẹ": "má",
+    "bố mẹ": "ba má"
+  },
+
+  "_tu_chi_dinh_va_tro_tu": {
+    "thế nào": "sao",
+    "như thế nào": "làm sao",
+    "như thế": "như vậy",
+    "thế thì": "vậy thì",
+    "thế à": "vậy hả",
+    "thế": "vậy",
+    "đấy": "đó",
+    "này": "nè",
+    "nhé": "nha",
+    "nhỉ": "hen",
+    "vâng": "dạ",
+    "ừ": "ờ",
+    "phải không": "phải hông",
+    "có phải không": "phải hông",
+    "chứ nhỉ": "chớ hen"
+  },
+
+  "_tinh_tu_trang_tu": {
+    "đắt": "mắc",
+    "rẻ": "rẻ",
+    "buồn cười": "mắc cười",
+    "bận": "mắc",
+    "một chút": "một xíu",
+    "một tí": "một xíu",
+    "tí": "xíu",
+    "hơi": "hơi",
+    "lắm": "quá",
+    "rất": "quá",
+    "cực kỳ": "quá",
+    "vô cùng": "quá"
+  },
+
+  "_do_vat_thuc_an": {
+    "quả": "trái",
+    "bát": "chén",
+    "cốc": "ly",
+    "thìa": "muỗng",
+    "chăn": "mền",
+    "ngô": "bắp",
+    "lạc": "đậu phộng",
+    "dứa": "thơm",
+    "rau mùi": "ngò",
+    "hành hoa": "hành lá",
+    "kem": "cà rem",
+    "mướp đắng": "khổ qua",
+    "vừng": "mè",
+    "sắn": "khoai mì",
+    "khoai lang": "khoai lang",
+    "màn": "mùng",
+    "xe ôm": "xe ôm",
+    "ô": "dù",
+    "hoa": "bông"
+  },
+
+  "_dong_tu_cach_noi": {
+    "làm gì đấy": "làm gì đó",
+    "đi đâu đấy": "đi đâu đó",
+    "sao thế": "sao vậy",
+    "gì cơ": "gì",
+    "cơ": "",
+    "xem nào": "coi",
+    "xem": "coi",
+    "nhìn": "coi",
+    "ăn cơm chưa": "ăn cơm chưa",
+    "về nhà": "về nhà",
+    "không": "hông"
+  },
+
+  "_rui_ro_can_review": {
+    "_note": "Nhung tu duoi day de sai nghia. Pipeline se KHONG tu doi, chi ghi canh bao vao log de anh tu quyet.",
+    "canh_bao": ["không", "cơ", "màn", "hoa", "xem", "nhìn", "mình", "rẻ", "hơi", "khoai lang", "về nhà", "ăn cơm chưa", "xe ôm"]
+  }
+}
