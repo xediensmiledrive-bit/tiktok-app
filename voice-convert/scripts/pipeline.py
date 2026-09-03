@@ -51,33 +51,73 @@ def load_config(path):
 
 # ---------------------------------------------------------------- segmentation
 
+def _split_at_largest_gap(words, max_chars):
+    """Chia mot chuoi tu thanh cac manh <= max_chars, cat tai khoang nghi dai nhat.
+
+    Can thiet cho clip noi lien mach khong dau cau: cat cung theo so ky tu se
+    ngat giua cau, TTS doc sai ngu dieu. Cat tai cho nguoi ta thuc su nghi hoi.
+    """
+    text = " ".join(w["text"] for w in words)
+    if len(text) <= max_chars or len(words) < 2:
+        return [words]
+
+    # Chi xet cac diem cat de hai nua deu khong qua ngan
+    lo, hi = max(1, len(words) // 5), min(len(words) - 1, len(words) * 4 // 5)
+    if lo >= hi:
+        lo, hi = 1, len(words)
+    gaps = [(i, float(words[i]["start"]) - float(words[i - 1]["end"]))
+            for i in range(lo, hi)]
+    if not gaps:
+        best_i = len(words) // 2
+    else:
+        best_gap = max(g for _, g in gaps)
+        # Khi cac khoang nghi xap xi nhau (noi lien mach), chon diem gan giua nhat
+        # de khong sinh ra manh vun 2-3 tu.
+        mid = len(words) / 2
+        best_i = min((i for i, g in gaps if g >= best_gap - 0.01),
+                     key=lambda i: abs(i - mid))
+
+    return (_split_at_largest_gap(words[:best_i], max_chars)
+            + _split_at_largest_gap(words[best_i:], max_chars))
+
+
 def group_words(stt, gap_threshold=0.55, max_chars=220):
-    """Gom tung tu tu STT thanh cac cau co start/end de canh timing."""
+    """Gom tung tu tu STT thanh cac cau co start/end de canh timing.
+
+    Cat theo dau cau va khoang nghi truoc; cau nao van qua dai thi chia tiep
+    tai khoang nghi dai nhat ben trong no.
+    """
     words = [w for w in stt.get("words", []) if w.get("type") in (None, "word")]
+    words = [{"text": (w.get("text") or "").strip(),
+              "start": float(w.get("start", 0)), "end": float(w.get("end", 0))}
+             for w in words if (w.get("text") or "").strip()]
+
     if not words:
         text = (stt.get("text") or "").strip()
         return [{"text": text, "start": 0.0, "end": 0.0}] if text else []
 
-    segs, cur = [], None
+    # Vong 1: ngat theo dau cau / khoang nghi
+    chunks, cur = [], []
     for i, w in enumerate(words):
-        wt = (w.get("text") or "").strip()
-        if not wt:
-            continue
-        ws, we = float(w.get("start", 0)), float(w.get("end", 0))
-        if cur is None:
-            cur = {"text": wt, "start": ws, "end": we}
-        else:
-            cur["text"] += " " + wt
-            cur["end"] = we
-
+        cur.append(w)
         nxt = words[i + 1] if i + 1 < len(words) else None
-        gap = (float(nxt.get("start", we)) - we) if nxt else 999.0
-        ends_sentence = bool(re.search(r"[.!?…]$", cur["text"]))
-        if nxt is None or ends_sentence or gap > gap_threshold or len(cur["text"]) > max_chars:
-            segs.append(cur)
-            cur = None
+        gap = (nxt["start"] - w["end"]) if nxt else 999.0
+        ends_sentence = bool(re.search(r"[.!?…]$", w["text"]))
+        if nxt is None or ends_sentence or gap > gap_threshold:
+            chunks.append(cur)
+            cur = []
     if cur:
-        segs.append(cur)
+        chunks.append(cur)
+
+    # Vong 2: cau con qua dai -> chia tai khoang nghi dai nhat
+    segs = []
+    for ch in chunks:
+        for part in _split_at_largest_gap(ch, max_chars):
+            segs.append({
+                "text": " ".join(w["text"] for w in part),
+                "start": part[0]["start"],
+                "end": part[-1]["end"],
+            })
     return segs
 
 
