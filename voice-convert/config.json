@@ -54,5 +54,19 @@
     "giong": "Tram v3",
     "ly_do": "Giong Sai Gon that (khong phai nhan vi-standard hay pha Bac), nhip 8.88s gan nhip goc 7.16s nhat trong nhom v3. Sau khi can tong, lech con 2.91 dB.",
     "ngay": "2026-09-03"
+  },
+  "nhac_nen": {
+    "_note": "Duong dan tuong doi tu thu muc voice-convert. Dat rong de khong chen nhac.",
+    "file": "music/bed-nang-dong-70s.mp3",
+    "gain_db": -16.0,
+    "duck_db": 10.0,
+    "notch_db": -3.0,
+    "fade_giay": 1.5,
+    "_giai_thich": {
+      "gain_db": "muc nhac so voi giong khi khong ai noi",
+      "duck_db": "nhac lui bao nhieu dB khi co tieng noi (2-14)",
+      "notch_db": "ha dai 1.8kHz cua nhac de nhuong cho phu am",
+      "fade_giay": "fade dau va cuoi"
+    }
   }
 }

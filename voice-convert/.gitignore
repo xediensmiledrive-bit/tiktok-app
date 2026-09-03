@@ -14,3 +14,7 @@ __pycache__/
 .env
 .env.*
 *.key
+
+# File nhac (nang, tai lai duoc)
+music/*
+!music/.gitkeep

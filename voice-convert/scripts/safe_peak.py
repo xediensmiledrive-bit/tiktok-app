@@ -3,7 +3,9 @@
 
 Limiter chi chan dinh mau. Dinh thuc (inter-sample) va buoc encode AAC deu co
 the vot len tren nguong do, nen chan o -1 dBFS truoc khi encode van co the ra
-file +0.5 dBTP. Cach chac chan la do file da encode roi bu dung phan thua.
+file +0.5 dBTP. Cach chac chan la do file da encode roi ha gain di.
+
+Va phai do tung buoc: dinh sau encode khong don dieu theo gain (xem render).
 
     python3 scripts/safe_peak.py audio.wav video.mp4 ra.mp4 [-1.0]
 """
@@ -16,7 +18,6 @@ import subprocess
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import media
 
-MAX_VONG = 3
 
 
 def true_peak(path):
@@ -38,18 +39,46 @@ def mux_with_gain(video, audio, out_path, gain_db):
     return out_path
 
 
-def render(video, audio, out_path, target_tp=-1.0):
-    """Ghep va lap toi da 3 vong cho den khi dinh that nam duoi target_tp."""
-    gain = 0.0
-    for vong in range(1, MAX_VONG + 1):
+def render(video, audio, out_path, target_tp=-1.0, step=0.5, max_thu=14):
+    """Ghep va ha gain cho den khi dinh that nam duoi target_tp.
+
+    KHONG noi suy. Do thuc te tren clip nay cho thay dinh that sau khi encode
+    AAC KHONG don dieu theo gain — no dao dong toi +-1.5 dB voi nhung buoc gain
+    rat nho:
+        -2.4 dB -> -1.66 dBTP
+        -2.5 dB -> -0.88 dBTP
+        -2.6 dB -> +0.47 dBTP   <- vot len du gain thap hon
+        -2.7 dB -> -1.46 dBTP
+        -2.8 dB -> -2.35 dBTP
+    Bo ma hoa phan bo bit khac nhau theo muc vao, nen dinh giai ma nhay loan.
+    Noi suy tren mot ham nhu vay khong bao gio hoi tu. Cach chac chan la do tung
+    buoc co dinh di xuong va lay gain dau tien dat nguong.
+
+    step  : buoc ha gain moi lan (dB)
+    """
+    # Uoc luong buoc dau cho do ton vong, roi do tung buoc tu do
+    mux_with_gain(video, audio, out_path, 0.0)
+    tp = true_peak(out_path)
+    print(f"  bu  +0.00 dB -> {tp:+.2f} dBTP")
+    if tp <= target_tp:
+        return {"gain_db": 0.0, "tp": round(tp, 2), "so_lan_do": 1}
+
+    gain = round((target_tp - tp) / step) * step   # bam vao luoi buoc
+    best = (tp, 0.0)
+    for lan in range(2, max_thu + 1):
         mux_with_gain(video, audio, out_path, gain)
         tp = true_peak(out_path)
-        print(f"  vong {vong}: bu {gain:+.2f} dB -> dinh that {tp:+.2f} dBTP")
+        print(f"  bu {gain:+6.2f} dB -> {tp:+.2f} dBTP")
+        if tp < best[0]:
+            best = (tp, gain)
         if tp <= target_tp:
-            return {"gain_db": round(gain, 2), "tp": round(tp, 2), "vong": vong}
-        gain += (target_tp - tp) - 0.15   # tru them chut cho lan encode sau
-    return {"gain_db": round(gain, 2), "tp": round(true_peak(out_path), 2),
-            "vong": MAX_VONG, "canh_bao": "chua dat nguong sau 3 vong"}
+            return {"gain_db": round(gain, 2), "tp": round(tp, 2), "so_lan_do": lan}
+        gain -= step
+
+    mux_with_gain(video, audio, out_path, best[1])
+    tp = true_peak(out_path)
+    return {"gain_db": round(best[1], 2), "tp": round(tp, 2), "so_lan_do": max_thu,
+            "canh_bao": f"chua xuong duoi {target_tp} dBTP"}
 
 
 if __name__ == "__main__":
