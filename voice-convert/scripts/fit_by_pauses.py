@@ -28,6 +28,56 @@ def find_pauses(path, noise_db=-40, min_dur=0.12):
     return list(zip(starts, ends))[:len(ends)]
 
 
+def _shrink(src, out_path, target, workdir, noise_db, min_dur, floor=0.14):
+    """Ban doc dai hon khung: cat bot khoang nghi, phan con lai bu bang atempo."""
+    tmp = os.path.join(workdir, "_fits")
+    os.makedirs(tmp, exist_ok=True)
+    cur = media.duration_of(src)
+
+    pauses = [(s, e) for s, e in find_pauses(src, noise_db, min_dur) if e < cur - 0.15]
+    if not pauses:
+        got, ratio, _ = media.fit_to_duration(src, out_path, target)
+        return {"cach": "atempo (khong co khoang nghi de cat)",
+                "ti_le": round(ratio, 4), "ra": round(got, 3)}
+
+    # Cat moi khoang nghi xuong floor, nhung khong cat qua muc can thiet
+    excess = cur - target
+    trimmable = sum(max(0.0, (e - s) - floor) for s, e in pauses)
+    share = min(1.0, excess / trimmable) if trimmable > 0 else 0.0
+
+    pieces, cursor = [], 0.0
+    for i, (s, e) in enumerate(pauses):
+        seg = os.path.join(tmp, f"a{i:03d}.wav")
+        media.run(["ffmpeg", "-y", "-hide_banner", "-loglevel", "error",
+                   "-ss", f"{cursor:.4f}", "-to", f"{s:.4f}", "-i", src,
+                   "-ac", str(media.CH), "-ar", str(media.SR),
+                   "-c:a", "pcm_s16le", seg])
+        pieces.append(seg)
+        keep = (e - s) - max(0.0, (e - s) - floor) * share
+        gap = os.path.join(tmp, f"g{i:03d}.wav")
+        pieces.append(media.silence_wav(max(keep, 0.02), gap))
+        cursor = e
+
+    tail = os.path.join(tmp, "tail.wav")
+    media.run(["ffmpeg", "-y", "-hide_banner", "-loglevel", "error",
+               "-ss", f"{cursor:.4f}", "-i", src,
+               "-ac", str(media.CH), "-ar", str(media.SR),
+               "-c:a", "pcm_s16le", tail])
+    pieces.append(tail)
+
+    joined = media.concat_wavs(pieces, os.path.join(tmp, "joined.wav"))
+    after_trim = media.duration_of(joined)
+    got, ratio, clamped = media.fit_to_duration(joined, out_path, target)
+    return {
+        "cach": "cat khoang nghi + noi nhanh",
+        "so_khoang_nghi": len(pauses),
+        "sau_khi_cat_nghi": round(after_trim, 2),
+        "ti_le_noi_nhanh": round(ratio, 4),
+        "bi_gioi_han": clamped,
+        "ra": round(media.duration_of(out_path), 3),
+    }
+
+
 def fit(src, out_path, target, workdir=None, noise_db=-40, min_dur=0.12,
         max_extra_per_pause=1.2):
     """Keo dai cac khoang nghi cho tong thoi luong bang target.
@@ -41,10 +91,14 @@ def fit(src, out_path, target, workdir=None, noise_db=-40, min_dur=0.12,
     tmp = os.path.join(workdir, "_fitp")
     os.makedirs(tmp, exist_ok=True)
 
-    if deficit <= 0.02:
-        # Da du dai hoac dai hon -> dung cach thong thuong
+    if deficit < -0.02:
+        # Ban doc DAI hon khung -> cat bot khoang nghi truoc, con thieu moi noi nhanh.
+        # Cat nghi truoc giup ti le atempo nho lai, giong do bi nghe nhu tua bang.
+        return _shrink(src, out_path, target, workdir, noise_db, min_dur)
+
+    if abs(deficit) <= 0.02:
         got, ratio, clamped = media.fit_to_duration(src, out_path, target)
-        return {"cach": "atempo", "ti_le": round(ratio, 4), "ra": round(got, 3)}
+        return {"cach": "khong can chinh", "ti_le": round(ratio, 4), "ra": round(got, 3)}
 
     pauses = find_pauses(src, noise_db, min_dur)
     # Bo khoang nghi dinh vao duoi file: keo dai no chi tao im lang cuoi clip
