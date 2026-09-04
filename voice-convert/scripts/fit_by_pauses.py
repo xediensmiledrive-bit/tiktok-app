@@ -28,7 +28,8 @@ def find_pauses(path, noise_db=-40, min_dur=0.12):
     return list(zip(starts, ends))[:len(ends)]
 
 
-def _shrink(src, out_path, target, workdir, noise_db, min_dur, floor=0.14):
+def _shrink(src, out_path, target, workdir, noise_db, min_dur, floor=0.14,
+            max_stretch=1.40):
     """Ban doc dai hon khung: cat bot khoang nghi, phan con lai bu bang atempo."""
     tmp = os.path.join(workdir, "_fits")
     os.makedirs(tmp, exist_ok=True)
@@ -67,19 +68,28 @@ def _shrink(src, out_path, target, workdir, noise_db, min_dur, floor=0.14):
 
     joined = media.concat_wavs(pieces, os.path.join(tmp, "joined.wav"))
     after_trim = media.duration_of(joined)
-    got, ratio, clamped = media.fit_to_duration(joined, out_path, target)
-    return {
+    got, ratio, clamped = media.fit_to_duration(joined, out_path, target,
+                                                max_stretch=max_stretch)
+    ra = media.duration_of(out_path)
+    out = {
         "cach": "cat khoang nghi + noi nhanh",
         "so_khoang_nghi": len(pauses),
         "sau_khi_cat_nghi": round(after_trim, 2),
         "ti_le_noi_nhanh": round(ratio, 4),
         "bi_gioi_han": clamped,
-        "ra": round(media.duration_of(out_path), 3),
+        "ra": round(ra, 3),
     }
+    # Khong nhet vua: mux dung -shortest nen phan thua se bi CAT MAT TIENG,
+    # ma cat im lang khong bao gi. Phai bao to o day.
+    if ra > target + 0.3:
+        out["LOI"] = (f"audio dai hon video {ra - target:.2f}s — se bi cat mat tieng. "
+                      f"Can noi nhanh {after_trim / target:.2f}x nhung tran dang la "
+                      f"{max_stretch:.2f}x. Nang max_stretch, ha floor, hoac rut gon loi.")
+    return out
 
 
 def fit(src, out_path, target, workdir=None, noise_db=-40, min_dur=0.12,
-        max_extra_per_pause=1.2):
+        max_extra_per_pause=1.2, floor=0.14, max_stretch=1.40):
     """Keo dai cac khoang nghi cho tong thoi luong bang target.
 
     Neu khong du khoang nghi de gian, phan con lai duoc bu bang atempo nhe.
@@ -94,7 +104,8 @@ def fit(src, out_path, target, workdir=None, noise_db=-40, min_dur=0.12,
     if deficit < -0.02:
         # Ban doc DAI hon khung -> cat bot khoang nghi truoc, con thieu moi noi nhanh.
         # Cat nghi truoc giup ti le atempo nho lai, giong do bi nghe nhu tua bang.
-        return _shrink(src, out_path, target, workdir, noise_db, min_dur)
+        return _shrink(src, out_path, target, workdir, noise_db, min_dur,
+                       floor=floor, max_stretch=max_stretch)
 
     if abs(deficit) <= 0.02:
         got, ratio, clamped = media.fit_to_duration(src, out_path, target)
@@ -146,6 +157,9 @@ def fit(src, out_path, target, workdir=None, noise_db=-40, min_dur=0.12,
 
 if __name__ == "__main__":
     src, out, target = sys.argv[1], sys.argv[2], float(sys.argv[3])
-    info = fit(src, out, target)
+    kw = {}
+    if len(sys.argv) > 4: kw["floor"] = float(sys.argv[4])
+    if len(sys.argv) > 5: kw["max_stretch"] = float(sys.argv[5])
+    info = fit(src, out, target, **kw)
     for k, v in info.items():
         print(f"  {k}: {v}")
