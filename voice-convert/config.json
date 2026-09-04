@@ -58,7 +58,7 @@
   "nhac_nen": {
     "_note": "Duong dan tuong doi tu thu muc voice-convert. Dat rong de khong chen nhac.",
     "file": "music/bed-nang-dong-70s.mp3",
-    "gain_db": -16.0,
+    "gain_db": -2.0,
     "duck_db": 10.0,
     "notch_db": -3.0,
     "fade_giay": 1.5,
@@ -67,6 +67,8 @@
       "duck_db": "nhac lui bao nhieu dB khi co tieng noi (2-14)",
       "notch_db": "ha dai 1.8kHz cua nhac de nhuong cho phu am",
       "fade_giay": "fade dau va cuoi"
-    }
+    },
+    "_da_chot": "Muc 'Ro' — nhac thap hon giong 16 dB. Nguoi dung nghe 3 muc roi chon (2026-09-03).",
+    "_canh_bao_do_dac": "Khong do muc nhac tren ban DA TRON: tram cua giong at het, nhac o -29 dB chi nang tong len 1 dB. Muon do thi trich rieng luong nhac sau ducking."
   }
 }
