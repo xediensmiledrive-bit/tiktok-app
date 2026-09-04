@@ -20,3 +20,6 @@ music/*
 !music/.gitkeep
 # Track nhac da chot — pipeline can no de chay
 !music/bed-nang-dong-70s.mp3
+
+# Thu muc lam viec cho tung loat clip — video va audio cua nguoi dung, khong commit
+loat*/
