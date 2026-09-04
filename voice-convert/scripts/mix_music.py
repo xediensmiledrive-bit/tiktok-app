@@ -59,13 +59,17 @@ def prepare_bed(music_path, out_path, target_dur, fade=1.5):
 
 
 def mix(voice_path, music_path, out_path, gain_db=-20.0, duck_db=12.0,
-        hp=90, notch_hz=1800, notch_db=-3.0, fade=1.5):
+        hp=90, notch_hz=1800, notch_db=-3.0, fade=1.5, clip_dur=None):
     """Tron nhac duoi giong.
 
     gain_db  : muc nhac so voi giong khi khong ai noi
     duck_db  : nhac lui bao nhieu dB khi co tieng noi (2-14, xem _threshold_for)
     hp       : cat tram duoi nguong nay khoi nhac cho khoi u
     notch_hz : ha nhe dai giua cua nhac de nhuong cho phu am
+    clip_dur : do dai THAT cua video. Track giong luon duoc pad dai hon video mot
+               chut (bien an toan cho -shortest), nen neu neo fade-out theo do dai
+               file giong thi phan cuoi cua fade bi cat mat va nhac dut ngang.
+               Truyen do dai video vao day de fade ket thuc dung luc clip het.
     """
     dur = media.duration_of(voice_path)
     bed = prepare_bed(music_path, out_path + ".bed.wav", dur, fade)
@@ -81,6 +85,11 @@ def mix(voice_path, music_path, out_path, gain_db=-20.0, duck_db=12.0,
         f"[v1][ducked]amix=inputs=2:duration=first:normalize=0,"
         f"alimiter=limit=0.92[out]"
     )
+    # Fade-out cuoi cung neo vao do dai video, ap len ban da tron
+    end = clip_dur if clip_dur else dur
+    fo = max(end - fade, 0.1)
+    chain = chain.replace("alimiter=limit=0.92[out]",
+                          f"afade=t=out:st={fo:.3f}:d={fade},alimiter=limit=0.92[out]")
     media.run(["ffmpeg", "-y", "-hide_banner", "-loglevel", "error",
                "-i", voice_path, "-i", bed, "-filter_complex", chain,
                "-map", "[out]", "-ac", str(media.CH), "-ar", str(media.SR),
@@ -95,6 +104,9 @@ if __name__ == "__main__":
     ap.add_argument("--gain", type=float, default=-20.0)
     ap.add_argument("--duck", type=float, default=12.0)
     ap.add_argument("--notch", type=float, default=-3.0)
+    ap.add_argument("--clip-dur", type=float, default=None,
+                    help="do dai that cua video, de neo fade-out")
     a = ap.parse_args()
-    mix(a.voice, a.music, a.out, gain_db=a.gain, duck_db=a.duck, notch_db=a.notch)
+    mix(a.voice, a.music, a.out, gain_db=a.gain, duck_db=a.duck, notch_db=a.notch,
+        clip_dur=a.clip_dur)
     print(f"  ra: {media.duration_of(a.out):.2f}s, {media.mean_volume_db(a.out):.1f} dBFS")
