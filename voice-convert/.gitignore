@@ -18,3 +18,5 @@ __pycache__/
 # File nhac (nang, tai lai duoc)
 music/*
 !music/.gitkeep
+# Track nhac da chot — pipeline can no de chay
+!music/bed-nang-dong-70s.mp3
