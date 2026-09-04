@@ -16,21 +16,45 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import media
 
 
-def _threshold_for(duck_db):
-    """Doi do lui mong muon (dB) thanh tham so threshold cua sidechaincompress.
+def _ducked_level(voice_path, bed_path, thr, ratio, tmp="/tmp/_duckprobe.wav"):
+    """Muc nhac sau khi bi ducking, do tren dung vat lieu that."""
+    chain = (f"[1:a][0:a]sidechaincompress="
+             f"threshold={thr:.6f}:ratio={ratio}:attack=8:release=280[out]")
+    media.run(["ffmpeg", "-y", "-hide_banner", "-loglevel", "error",
+               "-i", voice_path, "-i", bed_path, "-filter_complex", chain,
+               "-map", "[out]", "-c:a", "pcm_s16le", tmp])
+    return media.mean_volume_db(tmp)
 
-    Do thuc te tren tin hieu thu: threshold moi quyet dinh do lui, con ratio gan
-    nhu khong anh huong (ratio 6 va 20 chi cach nhau 0.4 dB). Cac diem do duoc:
-        threshold 0.003 -> lui 11.2 dB
-        threshold 0.010 -> lui  7.8 dB
-        threshold 0.030 -> lui  1.2 dB
-    Noi suy tuyen tinh tren log10(threshold) giua hai diem dau.
+
+def calibrate_duck(voice_path, bed_path, target_db, ratio=4, verbose=True):
+    """Tim threshold cho ra dung do lui mong muon TREN VAT LIEU THAT.
+
+    Khong the tra bang tra san. Do lui cua mot bo nen phu thuoc vao sidechain
+    vuot nguong bao nhieu, ma cai do khac han giua tin hieu thu va giong noi
+    that. Lan hieu chinh dau tien lam tren tone tong hop co khoang lang sach da
+    cho ra bang so sai hoan toan: dat 10 dB nhung tren giong that lai dim toi
+    43.8 dB, tuc nhac bien mat.
+
+    Nen: do thang tren cap giong/nhac dang dung, do tim nhi phan tren threshold.
     """
-    import math
-    duck_db = max(2.0, min(14.0, duck_db))
-    # log10(thr) = -2.52 khi lui 11.2 dB; do doc ~ +0.153 moi dB lui it di
-    log_thr = -2.52 + (11.2 - duck_db) * 0.153
-    return max(0.0015, min(0.05, 10 ** log_thr))
+    goc = media.mean_volume_db(bed_path)
+    lo, hi = 0.0005, 0.9          # thr thap = lui nhieu
+    best = None
+    for _ in range(8):
+        mid = (lo * hi) ** 0.5    # tim nhi phan tren thang log
+        lui = goc - _ducked_level(voice_path, bed_path, mid, ratio)
+        if best is None or abs(lui - target_db) < abs(best[1] - target_db):
+            best = (mid, lui)
+        if abs(lui - target_db) < 0.6:
+            break
+        if lui > target_db:
+            lo = mid              # lui qua nhieu -> tang threshold
+        else:
+            hi = mid
+    if verbose:
+        print(f"    hieu chinh ducking: threshold={best[0]:.5f} -> lui {best[1]:.1f} dB "
+              f"(dat {target_db:.0f} dB)")
+    return best[0], best[1]
 
 
 def prepare_bed(music_path, out_path, target_dur, fade=1.5):
@@ -74,14 +98,15 @@ def mix(voice_path, music_path, out_path, gain_db=-20.0, duck_db=12.0,
     dur = media.duration_of(voice_path)
     bed = prepare_bed(music_path, out_path + ".bed.wav", dur, fade)
 
-    thr = _threshold_for(duck_db)
+    thr, lui_that = calibrate_duck(voice_path, bed, duck_db)
+    # gain_db dat SAU bo nen: bo nen quyet dinh hanh vi dong, gain quyet dinh muc.
     chain = (
         f"[1:a]highpass=f={hp},"
-        f"equalizer=f={notch_hz}:t=h:w=1600:g={notch_db},"
-        f"volume={gain_db}dB[bed];"
+        f"equalizer=f={notch_hz}:t=h:w=1600:g={notch_db}[bed];"
         f"[0:a]asplit=2[v1][vsc];"
         f"[bed][vsc]sidechaincompress="
-        f"threshold={thr:.5f}:ratio=20:attack=8:release=280[ducked];"
+        f"threshold={thr:.6f}:ratio=4:attack=8:release=280[duckedraw];"
+        f"[duckedraw]volume={gain_db}dB[ducked];"
         f"[v1][ducked]amix=inputs=2:duration=first:normalize=0,"
         f"alimiter=limit=0.92[out]"
     )
