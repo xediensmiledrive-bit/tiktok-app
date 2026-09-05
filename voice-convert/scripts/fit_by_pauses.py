@@ -48,12 +48,16 @@ def _shrink(src, out_path, target, workdir, noise_db, min_dur, floor=0.14,
 
     pieces, cursor = [], 0.0
     for i, (s, e) in enumerate(pauses):
-        seg = os.path.join(tmp, f"a{i:03d}.wav")
-        media.run(["ffmpeg", "-y", "-hide_banner", "-loglevel", "error",
-                   "-ss", f"{cursor:.4f}", "-to", f"{s:.4f}", "-i", src,
-                   "-ac", str(media.CH), "-ar", str(media.SR),
-                   "-c:a", "pcm_s16le", seg])
-        pieces.append(seg)
+        # Ban doc co the mo dau bang im lang (s = 0), hoac silencedetect tra ve
+        # hai khoang nghi dinh nhau (s == e cua khoang truoc). Ca hai truong hop
+        # deu cho doan tieng dai 0 giay -> ffmpeg bao "-to value smaller than -ss".
+        if s - cursor > 0.01:
+            seg = os.path.join(tmp, f"a{i:03d}.wav")
+            media.run(["ffmpeg", "-y", "-hide_banner", "-loglevel", "error",
+                       "-ss", f"{cursor:.4f}", "-to", f"{s:.4f}", "-i", src,
+                       "-ac", str(media.CH), "-ar", str(media.SR),
+                       "-c:a", "pcm_s16le", seg])
+            pieces.append(seg)
         keep = (e - s) - max(0.0, (e - s) - floor) * share
         gap = os.path.join(tmp, f"g{i:03d}.wav")
         pieces.append(media.silence_wav(max(keep, 0.02), gap))
@@ -124,12 +128,16 @@ def fit(src, out_path, target, workdir=None, noise_db=-40, min_dur=0.12,
 
     pieces, cursor = [], 0.0
     for i, (s, e) in enumerate(pauses):
-        seg = os.path.join(tmp, f"a{i:03d}.wav")
-        media.run(["ffmpeg", "-y", "-hide_banner", "-loglevel", "error",
-                   "-ss", f"{cursor:.4f}", "-to", f"{s:.4f}", "-i", src,
-                   "-ac", str(media.CH), "-ar", str(media.SR),
-                   "-c:a", "pcm_s16le", seg])
-        pieces.append(seg)
+        # Ban doc co the mo dau bang im lang (s = 0), hoac silencedetect tra ve
+        # hai khoang nghi dinh nhau (s == e cua khoang truoc). Ca hai truong hop
+        # deu cho doan tieng dai 0 giay -> ffmpeg bao "-to value smaller than -ss".
+        if s - cursor > 0.01:
+            seg = os.path.join(tmp, f"a{i:03d}.wav")
+            media.run(["ffmpeg", "-y", "-hide_banner", "-loglevel", "error",
+                       "-ss", f"{cursor:.4f}", "-to", f"{s:.4f}", "-i", src,
+                       "-ac", str(media.CH), "-ar", str(media.SR),
+                       "-c:a", "pcm_s16le", seg])
+            pieces.append(seg)
         gap = os.path.join(tmp, f"g{i:03d}.wav")
         pieces.append(media.silence_wav((e - s) + capped, gap))
         cursor = e
