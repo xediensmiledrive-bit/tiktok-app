@@ -1,0 +1,6 @@
+# Khong bao gio commit key / bi mat
+.env
+.env.*
+*.key
+**/.env
+**/.env.*

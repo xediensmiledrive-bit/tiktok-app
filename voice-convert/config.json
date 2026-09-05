@@ -1,0 +1,74 @@
+{
+  "_huong_dan": "Cau hinh da CHOT cho chay hang loat. Doi voice_id/tts_model_id o day la doi cho moi clip.",
+  "voice_id": "6Xq32rHt6oAu98TBDKfr",
+  "voice_name": "Tram - Friendly Southern Vietnamese (giong Sai Gon)",
+  "mode": "tts",
+  "keep_music": "no",
+  "language_code": "vi",
+  "stt_model_id": "scribe_v1",
+  "diarize": true,
+  "tts_model_id": "eleven_v3",
+  "tts_voice_settings": {
+    "stability": 0.45,
+    "similarity_boost": 0.85,
+    "style": 0.15,
+    "use_speaker_boost": true
+  },
+  "sts_model_id": "eleven_multilingual_sts_v2",
+  "sts_voice_settings": {
+    "stability": 0.4,
+    "similarity_boost": 0.9,
+    "use_speaker_boost": true
+  },
+  "sts_remove_background_noise": false,
+  "segment_gap_threshold": 0.55,
+  "segment_max_chars": 220,
+  "max_stretch": 1.4,
+  "min_stretch": 0.95,
+  "bed_gain_db": -3.0,
+  "music_detect_threshold_db": 12.0,
+  "_ghi_chu_stretch": "max_stretch: cau dai hon khung se noi nhanh toi da bao nhieu lan. min_stretch gan 1.0 = cau ngan thi chen im lang chu khong keo nhao giong.",
+  "muc_do_doi_tu_vung": "dam",
+  "_giong_du_phong": {
+    "_note": "Da do phoi tan tren cung mot cau. lech_tb = khoang cach so voi giong goc cua kenh (cang nho cang giong). nhip = do dai cau mau; nhip goc cua kenh la 7.16s.",
+    "Clara Tran": {
+      "voice_id": "jlF8iBnNc6M1ZP5hRcRw",
+      "lech_tb": 4.61,
+      "nhip": 8.88,
+      "luu_y": "Tong tot hon Tram, cung nhip. Nhung nhan la vi-standard, KHONG phai mien Nam — phai nghe xac nhan giong truoc khi dung."
+    },
+    "Ngoc Tuyet": {
+      "voice_id": "Dl80n1cw0TNTNuDzT8yo",
+      "lech_tb": 3.0,
+      "nhip": 12.24,
+      "luu_y": "Tong sat nhat (2k-4k chi lech +0.6dB) nhung doc rat cham, phai ep 1.7x. Nhan la vi-northern pha Nam."
+    },
+    "Tuyet": {
+      "voice_id": "xjyQliDr4k3i3iSr1wSb",
+      "lech_tb": 2.57,
+      "nhip": 9.92,
+      "luu_y": "Mien Nam that, tong tot, nhung v3 doc qua cham cho nhip quang cao."
+    }
+  },
+  "_da_chot": {
+    "giong": "Tram v3",
+    "ly_do": "Giong Sai Gon that (khong phai nhan vi-standard hay pha Bac), nhip 8.88s gan nhip goc 7.16s nhat trong nhom v3. Sau khi can tong, lech con 2.91 dB.",
+    "ngay": "2026-09-03"
+  },
+  "nhac_nen": {
+    "_note": "Duong dan tuong doi tu thu muc voice-convert. Dat rong de khong chen nhac.",
+    "file": "music/bed-nang-dong-70s.mp3",
+    "gain_db": -2.0,
+    "duck_db": 10.0,
+    "notch_db": -3.0,
+    "fade_giay": 1.5,
+    "_giai_thich": {
+      "gain_db": "muc nhac so voi giong khi khong ai noi",
+      "duck_db": "nhac lui bao nhieu dB khi co tieng noi (2-14)",
+      "notch_db": "ha dai 1.8kHz cua nhac de nhuong cho phu am",
+      "fade_giay": "fade dau va cuoi"
+    },
+    "_da_chot": "Muc 'Ro' — nhac thap hon giong 16 dB. Nguoi dung nghe 3 muc roi chon (2026-09-03).",
+    "_canh_bao_do_dac": "Khong do muc nhac tren ban DA TRON: tram cua giong at het, nhac o -29 dB chi nang tong len 1 dB. Muon do thi trich rieng luong nhac sau ducking."
+  }
+}

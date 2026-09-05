@@ -1,0 +1,25 @@
+# Clip dau vao / ket qua / file trung gian — khong day len git
+input/*
+!input/.gitkeep
+output/*
+!output/.gitkeep
+work/*
+!work/.gitkeep
+voice_samples/*
+!voice_samples/.gitkeep
+__pycache__/
+*.pyc
+
+# Khong bao gio commit key
+.env
+.env.*
+*.key
+
+# File nhac (nang, tai lai duoc)
+music/*
+!music/.gitkeep
+# Track nhac da chot — pipeline can no de chay
+!music/bed-nang-dong-70s.mp3
+
+# Thu muc lam viec cho tung loat clip — video va audio cua nguoi dung, khong commit
+loat*/
